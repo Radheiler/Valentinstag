@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Valentinstag 💘</title>
+  <style>
+    :root { --bg: #ffe6eb; --card: #fff; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+    .card{
+      width: min(560px, 100%);
+      background: var(--card);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.12);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    h1 { margin: 0 0 12px; font-size: clamp(22px, 5vw, 30px); }
+    p { margin: 0 0 16px; opacity: .8; }
+    #yes, #no{
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 18px;
+      font-weight: 650;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    #yes { background: #ff3b7a; color: white; }
+    #no  { background: #eee; position: absolute; } /* wird bewegt */
+    .yesWrap { margin-top: 6px; }
+    .hint { margin-top: 44px; font-size: 14px; opacity: .65; }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <h1>💘 Möchtest du mein Valentinstags-Date sein? 💘</h1>
+    <p>Wähle weise 😇</p>
+
+    <div class="yesWrap">
+      <button id="yes" type="button" onclick="yesClicked()">Ja 💕</button>
+    </div>
+
+    <button id="no" type="button">Nein 😢</button>
+
+    <div class="hint">Tipp: „Nein“ ist… äh… schwer zu treffen.</div>
+  </div>
+
+  <script>
+    const card = document.getElementById("card");
+    const yesBtn = document.getElementById("yes");
+    const noBtn  = document.getElementById("no");
+
+    let yesSize = 18;
+
+    function placeNoButtonInitial(){
+      // Startposition in der Card
+      const rect = card.getBoundingClientRect();
+      const nb = noBtn.getBoundingClientRect();
+      const x = (rect.width - nb.width) * 0.65;
+      const y = (rect.height - nb.height) * 0.55;
+      noBtn.style.left = Math.max(12, x) + "px";
+      noBtn.style.top  = Math.max(12, y) + "px";
+    }
+
+    function moveNoButton(){
+      const rect = card.getBoundingClientRect();
+      const nb = noBtn.getBoundingClientRect();
+
+      // Ränder, damit der Button nie halb außerhalb liegt
+      const padding = 12;
+      const maxX = rect.width  - nb.width  - padding;
+      const maxY = rect.height - nb.height - padding;
+
+      const x = padding + Math.random() * Math.max(1, maxX - padding);
+      const y = padding + Math.random() * Math.max(1, maxY - padding);
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top  = y + "px";
+
+      // Bonus: Ja wird größer, wenn sie versucht "Nein" zu drücken
+      yesSize += 6;
+      yesBtn.style.fontSize = yesSize + "px";
+    }
+
+    function yesClicked(){
+      card.innerHTML = "<h1>🎉 JAAAA!! 💖</h1><p>Beste Entscheidung 🥰</p>";
+    }
+
+    // Flieht vor Maus (Pointer) und Finger (Touch)
+    noBtn.addEventListener("pointerenter", moveNoButton);
+    noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveNoButton(); }, {passive:false});
+    // Falls doch geklickt wird:
+    noBtn.addEventListener("click", moveNoButton);
+
+    // Initial platzieren (nach Layout)
+    window.addEventListener("load", placeNoButtonInitial);
+    window.addEventListener("resize", placeNoButtonInitial);
+  </script>
+</body>
+</html>
